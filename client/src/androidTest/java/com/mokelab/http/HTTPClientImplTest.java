@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +43,7 @@ public class HTTPClientImplTest {
         final Map<String, Object> result = new HashMap<>();
 
         HTTPClient client = new HTTPClientImpl(new OkHttpClient(), thread.handler);
-        client.send(Method.GET, "https://tech.mokelab.com", null, null, new HTTPClient.Callback() {
+        client.send(Method.GET, "https://gae-echoserver.appspot.com/test", null, null, new HTTPClient.Callback() {
             @Override
             public void done(HTTPResponse response, HTTPException exception) {
                 result.put("response", response);
@@ -57,6 +58,9 @@ public class HTTPClientImplTest {
             return;
         }
         assertEquals(200, response.status);
+        JSONObject json = new JSONObject(response.body);
+        assertEquals("/test", json.getString("url"));
+        assertEquals("GET", json.getString("method"));
     }
 
     private static class MyThread extends Thread {
